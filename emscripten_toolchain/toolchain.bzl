@@ -341,10 +341,6 @@ def _impl(ctx):
             name = "dbg",
             provides = ["variant:crosstool_build_mode"],
         ),
-        feature(
-            name = "fastbuild",
-            provides = ["variant:crosstool_build_mode"],
-        ),
 
         # Feature to prevent 'command line too long' issues
         feature(
@@ -357,9 +353,6 @@ def _impl(ctx):
         ),
 
         #### User-settable features
-
-        # Set if enabling exceptions.
-        feature(name = "exceptions"),
 
         # This feature overrides the default optimization to prefer execution speed
         # over binary size (like clang -O3).
@@ -439,23 +432,11 @@ def _impl(ctx):
             name = "wasm_relaxed_simd",
             requires = [feature_set(features = ["llvm_backend"])],
         ),
-        feature(
-            name = "precise_long_double_printf",
-            enabled = True,
-        ),
-        feature(
-            name = "wasm_warnings_as_errors",
-            enabled = False,
-        ),
 
         # ASan and UBSan. See also:
         # https://emscripten.org/docs/debugging/Sanitizers.html
         feature(name = "wasm_asan"),
         feature(name = "wasm_ubsan"),
-        feature(
-            name = "output_format_js",
-            enabled = True,
-        ),
         feature(
             name = "wasm_standalone",
         ),
@@ -483,53 +464,6 @@ def _impl(ctx):
                     flags = ["--sysroot=%{sysroot}"],
                     expand_if_available = "sysroot",
                 ),
-            ],
-        ),
-        # Compile + Link
-        flag_set(
-            actions = [
-                ACTION_NAMES.c_compile,
-                ACTION_NAMES.cpp_compile,
-                ACTION_NAMES.linkstamp_compile,
-                ACTION_NAMES.assemble,
-                ACTION_NAMES.preprocess_assemble,
-                ACTION_NAMES.cpp_header_parsing,
-                ACTION_NAMES.cpp_module_compile,
-                ACTION_NAMES.cpp_module_codegen,
-                ACTION_NAMES.clif_match,
-                ACTION_NAMES.cpp_link_executable,
-                ACTION_NAMES.cpp_link_dynamic_library,
-                ACTION_NAMES.cpp_link_nodeps_dynamic_library,
-            ],
-            # This forces color diagnostics even on Forge (where we don't have an
-            # attached terminal).
-            flags = [
-                "-fdiagnostics-color",
-            ],
-        ),
-        # C++ compiles (and implicitly link)
-        flag_set(
-            actions = all_cpp_compile_actions,
-            flags = [
-                "-fno-exceptions",
-            ],
-            not_features = ["exceptions"],
-        ),
-        flag_set(
-            actions = all_cpp_compile_actions,
-            flags = [
-                "-fexceptions",
-            ],
-            features = ["exceptions"],
-        ),
-        # All compiles (and implicitly link)
-        flag_set(
-            actions = all_compile_actions +
-                      all_link_actions,
-            flags = [
-                "-fno-strict-aliasing",
-                "-funsigned-char",
-                "-no-canonical-prefixes",
             ],
         ),
         # Language Features
@@ -570,16 +504,6 @@ def _impl(ctx):
             flags = ["-msimd128", "-mrelaxed-simd"],
             features = ["wasm_relaxed_simd"],
         ),
-        flag_set(
-            actions = all_link_actions,
-            flags = ["-s", "PRINTF_LONG_DOUBLE=1"],
-            features = ["precise_long_double_printf"],
-        ),
-        flag_set(
-            actions = all_link_actions,
-            flags = ["--oformat=js"],
-            features = ["output_format_js"],
-        ),
 
         # Opt
         flag_set(
@@ -611,19 +535,6 @@ def _impl(ctx):
                       all_link_actions,
             flags = ["-O3"],
             features = ["optimized_for_speed", "opt"],
-        ),
-
-        # Fastbuild
-        flag_set(
-            actions = all_compile_actions,
-            flags = ["-fomit-frame-pointer"],
-            features = ["fastbuild"],
-        ),
-        flag_set(
-            actions = all_compile_actions +
-                      all_link_actions,
-            flags = ["-O0"],
-            features = ["fastbuild"],
         ),
 
         # Dbg
@@ -1032,11 +943,6 @@ def _impl(ctx):
                 '-D__TIMESTAMP__="redacted"',
                 '-D__TIME__="redacted"',
             ],
-        ),
-        flag_set(
-            actions = all_compile_actions,
-            flags = ["-Werror"],
-            features = ["wasm_warnings_as_errors"],
         ),
         flag_set(
             actions = all_link_actions,
