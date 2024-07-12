@@ -25,20 +25,20 @@ def _wasm_transition_impl(settings, attr):
     if attr.simd:
         features.append("wasm_simd")
 
-    platform = "@emsdk//:platform_wasm"
+    platform = "@rules_emscripten//:platform_wasm"
     if attr.standalone:
-        platform = "@emsdk//:platform_wasi"
+        platform = "@rules_emscripten//:platform_wasi"
         features.append("wasm_standalone")
 
     return {
         "//command_line_option:compiler": "emscripten",
-        "//command_line_option:crosstool_top": "@emsdk//emscripten_toolchain:everything",
+        "//command_line_option:crosstool_top": "@rules_emscripten//emscripten_toolchain:everything",
         "//command_line_option:cpu": "wasm",
         "//command_line_option:features": features,
         "//command_line_option:dynamic_mode": "off",
         "//command_line_option:linkopt": linkopts,
         "//command_line_option:platforms": [platform],
-        "//command_line_option:custom_malloc": "@emsdk//emscripten_toolchain:malloc",
+        "//command_line_option:custom_malloc": "@rules_emscripten//emscripten_toolchain:malloc",
     }
 
 _wasm_transition = transition(
@@ -102,7 +102,7 @@ _WASM_BINARY_COMMON_ATTRS = {
         executable = True,
         allow_files = True,
         cfg = "exec",
-        default = Label("@emsdk//emscripten_toolchain:wasm_binary"),
+        default = Label("@rules_emscripten//emscripten_toolchain:wasm_binary"),
     ),
 }
 

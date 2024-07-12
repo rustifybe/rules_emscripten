@@ -3,14 +3,14 @@ local_repository(
     path = "..",
 )
 
-load("@emsdk//:deps.bzl", "deps")
+load("@rules_emscripten//:deps.bzl", "deps")
 
 deps()
 
-load("@emsdk//:emscripten_deps.bzl", "emscripten_deps")
+load("@rules_emscripten//:emscripten_deps.bzl", "emscripten_deps")
 
 emscripten_deps()
 
-load("@emsdk//:toolchains.bzl", "register_emscripten_toolchains")
+load("@rules_emscripten//:toolchains.bzl", "register_emscripten_toolchains")
 
 register_emscripten_toolchains()

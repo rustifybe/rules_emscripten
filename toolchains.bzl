@@ -33,7 +33,7 @@ def _emscripten_cache_impl(repository_ctx):
     # Read the default emscripten configuration file
     default_config = repository_ctx.read(
         repository_ctx.path(
-            Label("@emsdk//emscripten_toolchain:default_config")
+            Label("@rules_emscripten//emscripten_toolchain:default_config")
         )
     )
 

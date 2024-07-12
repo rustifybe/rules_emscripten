@@ -105,7 +105,7 @@ def emscripten_deps(emscripten_version = "latest"):
 
     if version not in EMSCRIPTEN_TAGS.keys():
         error_msg = "Emscripten version {} not found.".format(version)
-        error_msg += " Look at @emsdk//:revisions.bzl for the list "
+        error_msg += " Look at @rules_emscripten//:revisions.bzl for the list "
         error_msg += "of currently supported versions."
         fail(error_msg)
 
@@ -135,7 +135,7 @@ def emscripten_deps(emscripten_version = "latest"):
         native.new_local_repository(
             name = "emscripten_bin_linux",
             build_file_content = BUILD_FILE_CONTENT_TEMPLATE.format(bin_extension = ""),
-            path = "emsdk/bazel/wasm-binaries"
+            path = "rules_emscripten/wasm-binaries"
         )
 
     if "emscripten_bin_linux_arm64" not in excludes:

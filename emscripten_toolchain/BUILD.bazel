@@ -17,7 +17,7 @@ filegroup(
     srcs = [
         "emcc.sh",
         "emcc.bat",
-        "@emsdk//:compiler_files",
+        "@rules_emscripten//:compiler_files",
         ":common_files",
     ],
 )
@@ -28,7 +28,7 @@ filegroup(
         "emcc_link.sh",
         "emcc_link.bat",
         "link_wrapper.py",
-        "@emsdk//:linker_files",
+        "@rules_emscripten//:linker_files",
         ":common_files",
     ],
 )
@@ -38,7 +38,7 @@ filegroup(
     srcs = [
         "emar.sh",
         "emar.bat",
-        "@emsdk//:ar_files",
+        "@rules_emscripten//:ar_files",
         ":common_files",
     ],
 )
@@ -61,7 +61,7 @@ emscripten_cc_toolchain_config_rule(
     name = "wasm",
     cpu = "wasm",
     em_config = "@emscripten_cache//:emscripten_config",
-    emscripten_binaries = "@emsdk//:compiler_files",
+    emscripten_binaries = "@rules_emscripten//:compiler_files",
     script_extension = select({
         "@bazel_tools//src/conditions:host_windows": "bat",
         "//conditions:default": "sh",

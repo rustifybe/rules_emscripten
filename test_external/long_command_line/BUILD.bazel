@@ -1,4 +1,4 @@
-load("@emsdk//emscripten_toolchain:wasm_rules.bzl", "wasm_cc_binary")
+load("@rules_emscripten//emscripten_toolchain:wasm_rules.bzl", "wasm_cc_binary")
 
 _TEST_TARGETS = [
     "long_command_line_file01",
