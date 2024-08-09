@@ -50,10 +50,6 @@ def flag_set(flags = None, features = None, not_features = None, **kwargs):
         )]
     return _flag_set(**kwargs)
 
-CROSSTOOL_DEFAULT_WARNINGS = [
-    "-Wall",
-]
-
 def _impl(ctx):
     target_cpu = ctx.attr.cpu
     toolchain_identifier = "emscripten-" + target_cpu
@@ -469,7 +465,7 @@ def _impl(ctx):
         # Language Features
         flag_set(
             actions = all_cpp_compile_actions,
-            flags = ["-std=gnu++17", "-nostdinc", "-nostdinc++"],
+            flags = ["-nostdinc", "-nostdinc++"],
         ),
 
         # Emscripten-specific settings:
@@ -603,11 +599,6 @@ def _impl(ctx):
                       all_link_actions,
             flags = ["-fdebug-compilation-dir=."],
             features = ["dwarf_debug_info"],
-        ),
-        # Generic warning flag list
-        flag_set(
-            actions = all_compile_actions,
-            flags = CROSSTOOL_DEFAULT_WARNINGS,
         ),
 
         # Defines and Includes and Paths and such
@@ -931,17 +922,6 @@ def _impl(ctx):
                     flags = ["@%{linker_param_file}"],
                     expand_if_available = "linker_param_file",
                 ),
-            ],
-        ),
-        flag_set(
-            actions = all_compile_actions,
-            flags = [
-                "-Wno-builtin-macro-redefined",
-                # Genrules may not escape quotes enough for these, so
-                # don't put them into $(CC_FLAGS):
-                '-D__DATE__="redacted"',
-                '-D__TIMESTAMP__="redacted"',
-                '-D__TIME__="redacted"',
             ],
         ),
         flag_set(
