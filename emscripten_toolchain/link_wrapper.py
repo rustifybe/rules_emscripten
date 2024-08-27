@@ -21,25 +21,23 @@ import os
 import subprocess
 import sys
 
-# Only argument should be @path/to/parameter/file
-assert sys.argv[1][0] == '@', sys.argv
-param_filename = sys.argv[1][1:]
-param_file_args = [l.strip() for l in open(param_filename, 'r').readlines()]
+if sys.argv[1][0] == '@':
+  link_args = [l.strip() for l in open(sys.argv[1][1:], 'r').readlines()]
+else:
+  link_args = sys.argv[1:]
 
-# Re-write response file if needed.
-if any(' ' in a for a in param_file_args):
-  new_param_filename = param_filename + '.modified'
-  with open(new_param_filename, 'w') as f:
-    for param in param_file_args:
-      if ' ' in param:
-        f.write('"%s"' % param)
-      else:
-        f.write(param)
-      f.write('\n')
-  sys.argv[1] = '@' + new_param_filename
+# Write response file.
+param_filename = 'link.params'
+with open(param_filename, 'w') as f:
+  for link_arg in link_args:
+    if ' ' in link_arg:
+      f.write('"%s"' % link_arg)
+    else:
+      f.write(link_arg)
+    f.write('\n')
 
 emcc_py = os.path.join(os.environ['EMSCRIPTEN'], 'emcc.py')
-rtn = subprocess.call([sys.executable, emcc_py] + sys.argv[1:])
+rtn = subprocess.call([sys.executable, emcc_py, '@' + param_filename])
 if rtn != 0:
   sys.exit(1)
 
@@ -48,7 +46,7 @@ if rtn != 0:
 parser = argparse.ArgumentParser(add_help=False)
 parser.add_argument('-o')
 parser.add_argument('--oformat')
-options = parser.parse_known_args(param_file_args)[0]
+options = parser.parse_known_args(link_args)[0]
 output_file = options.o
 oformat = options.oformat
 outdir = os.path.normpath(os.path.dirname(output_file))
@@ -94,6 +92,8 @@ extensions = [
     '.aw.js'
 ]
 
+if os.path.exists(os.path.join(outdir, base_name)):
+  files.append(base_name)
 for ext in extensions:
   filename = base_name + ext
   if os.path.exists(os.path.join(outdir, filename)):
