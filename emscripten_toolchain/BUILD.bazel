@@ -1,4 +1,5 @@
 load(":toolchain.bzl", "emscripten_cc_toolchain_config_rule")
+load("@rules_python//python:defs.bzl", "py_binary")
 
 package(default_visibility = ["//visibility:public"])
 
